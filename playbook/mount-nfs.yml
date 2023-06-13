@@ -1,0 +1,19 @@
+---
+- name: Mount Storage for Master Node
+  hosts: k8s_all
+  gather_facts: no
+  remote_user: root
+  tasks:
+    - name: Create share directory 
+      file:
+        path: /nfs_share
+        state: directory
+        mode: '0777'
+
+    - name: Mount NFS 
+      ansible.posix.mount:
+        src: Storage-Server:/nfs
+        path: /nfs_share
+        opts: rw,sync
+        state: mounted
+        fstype: nfs

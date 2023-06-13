@@ -1,0 +1,29 @@
+---
+- name: Initialize NFS Server
+  hosts: Storage_Server
+  gather_facts: no
+  remote_user: root
+  tasks:
+    - name: Install NFS Utils
+      yum:
+        name: nfs-utils
+        state: present
+
+    - name: Create share directory
+      file:
+        path: /nfs
+        state: directory
+        mode: '0777' 
+
+    - name: Configure NFS Server
+      blockinfile:
+        path: /etc/exports
+        block: |
+          /root/nfs 10.6.3.*(rw,sync)
+          /root/nfs k8s*(rw,sync)
+
+    - name: Enable Service
+      systemd:
+        name: nfs-server
+        state: started
+        enabled: yes
